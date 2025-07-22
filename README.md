@@ -1,31 +1,46 @@
-# Decentralized Subscription DAO
 
-## Project Description
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
 
-The Decentralized Subscription DAO is a smart contract-based platform designed to manage and distribute subscription funds among creators transparently. Subscribers pay a fixed monthly fee, and DAO administrators distribute these funds to registered creators based on performance, content quality, or other off-chain metrics.
+contract SubscriptionDAO {
+    struct Creator {
+        address wallet;
+        uint256 totalEarnings;
+    }
 
-## Project Vision
+    address[] public creatorList;
+    mapping(address => uint256) public creatorEarnings;
 
-To empower digital creators through decentralized and transparent recurring payment systems while giving supporters a governance voice in content funding.
+    // Add this function
+    function getTopCreators(uint256 count) external view returns (address[] memory topCreators, uint256[] memory earnings) {
+        require(count > 0, "Count must be greater than zero");
+        uint256 total = creatorList.length < count ? creatorList.length : count;
 
-## Key Features
+        // Temporary array for sorting
+        address[] memory sortedCreators = new address[](creatorList.length);
+        for (uint i = 0; i < creatorList.length; i++) {
+            sortedCreators[i] = creatorList[i];
+        }
 
-- Subscription system with monthly fee configuration.
-- Creator registration and fund distribution logic.
-- Track subscription history and creator earnings.
-- Permissioned administrative functions for DAO governance.
-- Upgradeable fee model to adapt to different tiers or networks.
+        // Sort creators by earnings (bubble sort for simplicity)
+        for (uint i = 0; i < total; i++) {
+            for (uint j = i + 1; j < creatorList.length; j++) {
+                if (creatorEarnings[sortedCreators[j]] > creatorEarnings[sortedCreators[i]]) {
+                    address temp = sortedCreators[i];
+                    sortedCreators[i] = sortedCreators[j];
+                    sortedCreators[j] = temp;
+                }
+            }
+        }
 
-## Future Scope
+        // Fill result arrays
+        topCreators = new address[](total);
+        earnings = new uint256[](total);
+        for (uint i = 0; i < total; i++) {
+            topCreators[i] = sortedCreators[i];
+            earnings[i] = creatorEarnings[sortedCreators[i]];
+        }
+    }
+}
 
-- DAO voting for fund distribution based on token-weighted scores.
-- Integration with identity solutions (e.g., ENS or decentralized IDs).
-- Creator reputation scores based on subscriber feedback.
-- NFT-based access tiers for premium content.
-- Cross-chain subscription mechanisms.
-
-
-## Contract Details
- 0x0417661D2De8C4824DD98BFD8C54719814531f52
- <img width="1817" height="863" alt="Screenshot 2025-07-11 145207" src="https://github.com/user-attachments/assets/59398892-12a5-490d-b4f2-a446b69ba277" />
- 
+"Added one function suggested by ChatGPT"
