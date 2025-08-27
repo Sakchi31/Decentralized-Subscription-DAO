@@ -43,4 +43,4 @@ contract SubscriptionDAO {
     }
 }
 
-"Added one function suggested by ChatGPT"
+"Updated.."
